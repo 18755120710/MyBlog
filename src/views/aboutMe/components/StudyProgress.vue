@@ -1,7 +1,8 @@
 <template>
     <div class="box">
         <div class="title">
-            前端开发
+            <span>前端开发</span>
+            <span><img src="@/assets/8_3前端开发.png" alt=""></span>
         </div>
         <div class="list">
             <div class="item" v-for="(item,index) in arr" :key="index">
@@ -44,7 +45,7 @@ const arr = ref([
 <style lang="scss" scoped>
 .box {
     margin: 0 auto;
-    padding: 12px;
+    padding: 18px;
     width: 220px;
     height: 220px;
     background-color: rgba(255, 255, 255, 0.9);
@@ -52,9 +53,15 @@ const arr = ref([
     border-radius: 16px;
 
     .title {
+        display: flex;
+        justify-content: space-between;
         font-weight: bold;
         height: 30px;
         line-height: 30px;
+
+        img {
+            width: 26px;
+        }
     }
 
     .list {

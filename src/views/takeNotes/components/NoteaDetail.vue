@@ -23,11 +23,12 @@
 
 <script setup>
 import { onMounted,ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router';
 import { ArrowRight } from '@element-plus/icons-vue';
 import { useCodeSerivce } from '@/stores/code';
 // 引入api
 import { getNotesListByIdService } from '@/api/notesList';
+import { useNotesListService } from '@/stores/notesList';
 
 // 获取路由传递来的参数
 const id = ref('')
@@ -38,6 +39,8 @@ const notesDetail = ref([])
 
 // 控制导航栏的状态
 const { setFlag } = useCodeSerivce()
+// 传递参数id
+const { setId } = useNotesListService()
 
 // 调用接口获取请求数据
 const obtainNotesListByIdList = async (id) => {
@@ -49,6 +52,11 @@ onMounted(() =>{
     id.value = route.params.id
     setFlag(true)
     obtainNotesListByIdList(id.value)
+    // setId(id.value)
+})
+onBeforeRouteLeave((to,from,next) => {
+    setFlag(false)
+    next()
 })
 </script>
 

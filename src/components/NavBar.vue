@@ -27,42 +27,10 @@
 import {onMounted, ref, watch} from "vue";
 import { Search, Sunny, User } from "@element-plus/icons-vue";
 import { useRouter } from "vue-router";
-// 引入库
 import { useEventListener } from "@vueuse/core";
 import { useCodeSerivce } from "@/stores/code";
-// 引入工具包
 import request from '@/utils/request'
-
-//定义一个变量控制导航栏内部数据的变化
-const isValue = ref(true)
-const has = ref(false) // 用来控制防止多次监听鼠标滚动使用
-
-// 获取store实例
-const codeStore = useCodeSerivce()
-
-const router = useRouter()
-
-// 定义一个变量控制是否开启检测滚轮
-const switchWheel = ref(false)
-// ！！！！！！！！！！！！！！！！！！！
-codeStore.$subscribe((mutation) => {
-    switchWheel.value = mutation.events.newValue
-    // 检测鼠标滚轮
-    if(switchWheel.value) {
-            useEventListener('wheel', async (e) => {
-            if(e.deltaY > 0 && !has.value) {
-                isValue.value = false
-                has.value = true
-            }
-            if(e.deltaY < 0 && has.value === true) {
-                isValue.value = true
-                has.value = false
-            }
-        })
-    }
-})
-
-const navText = ref({})
+import { getNotesTitleByIdService } from "@/api/notesList";
 
 // 根据点击导航栏不同的选项来控制跳转的不同路径
 const To = (e) => {
@@ -82,9 +50,54 @@ const To = (e) => {
         router.push('/wall')
     }
 }
+
+//定义一个变量控制导航栏内部数据的变化
+const isValue = ref(true)
+const has = ref(false) // 用来控制防止多次监听鼠标滚动使用
+
+// 获取store实例
+const codeStore = useCodeSerivce()
+
+const router = useRouter()
+
+// 定义一个变量控制是否开启检测滚轮
+const switchWheel = ref(false)
+// ！！！！！！！！！！！！！！！！！！！
+codeStore.$subscribe((mutation,state) => {
+    // switchWheel.value = mutation.events.newValue
+    switchWheel.value = state.flag
+    console.log(switchWheel.value)
+    // 检测鼠标滚轮
+    if(switchWheel.value === true) {
+            useEventListener('wheel', async (e) => {
+            if(e.deltaY > 0 && !has.value) {
+                console.log(switchWheel.value)
+                isValue.value = false
+                has.value = true
+            }
+            if(e.deltaY < 0 && has.value === true) {
+                console.log(switchWheel.value)
+                isValue.value = true
+                has.value = false
+            }
+        })
+    } else {
+        console.log('look me')
+    }
+})
+
+const navText = ref({})
+
+// 获取导航列表项
 const getNavBarItem = async () => {
     const { data } = await request.get('/navBarItem')
     navText.value = data
+}
+
+// 获取导航栏滚动时显示的内容标题
+const getNotesTitle = async (id) => {
+    const res = await getNotesTitleByIdService(id)
+    console.log(res)
 }
 onMounted(() => {
     getNavBarItem()
